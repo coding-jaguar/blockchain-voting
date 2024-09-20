@@ -1,0 +1,49 @@
+# Common across all projects
+node_modules/
+dist/
+.env
+.DS_Store
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Hardhat specific
+artifacts/
+cache/
+coverage/
+typechain/
+typechain-types/
+*.tsbuildinfo
+
+# Express specific
+logs/
+*.log
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Vite React specific
+dist/
+.vite/
+.vscode/
+.idea/
+*.local
+*.sublime-project
+*.sublime-workspace
+
+# Ignore generated lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Ignore editor/project-specific files
+*.swp
+*.swo
+*.vscode/
+.idea/
+
+# Git-specific
+.git/

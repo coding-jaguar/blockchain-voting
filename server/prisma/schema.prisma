@@ -1,0 +1,57 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  username    String   @unique
+  publicKey   String   @unique
+  password    String // Storing hashed password
+  userType    UserType
+  phoneNumber String? // Optional phone number
+
+  // Relationships
+  voterInfo     Voter?
+  candidateInfo Candidate?
+}
+
+model Voter {
+  id       String  @id @default(auto()) @map("_id") @db.ObjectId
+  user     User    @relation(fields: [userId], references: [id])
+  userId   String  @unique @db.ObjectId
+  hasVoted Boolean @default(false)
+  voteHash String? // Hash of the encrypted vote
+}
+
+model Candidate {
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
+  user       User      @relation(fields: [userId], references: [id])
+  userId     String    @unique @db.ObjectId
+  partyName  String?
+  manifesto  String?
+  voteCount  Int       @default(0)
+  election   Election? @relation(fields: [electionId], references: [id])
+  electionId String?   @db.ObjectId
+}
+
+enum UserType {
+  ADMIN
+  VOTER
+  CANDIDATE
+}
+
+model Election {
+  id         String      @id @default(auto()) @map("_id") @db.ObjectId
+  candidates Candidate[]
+  name       String
+  isActive   Boolean     @default(false)
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+}
