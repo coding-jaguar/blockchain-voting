@@ -4,6 +4,7 @@ import userRoutes from "./routes/userRoutes";
 import cors from "cors";
 import electionRoutes from "./routes/electionRoutes";
 import candidateRoutes from "./routes/candidateRoutes";
+import voteRoutes from "./routes/voteRoutes";
 //For env File
 dotenv.config();
 
@@ -20,6 +21,7 @@ app.use(
 app.use("/users", userRoutes);
 app.use("/elections", electionRoutes);
 app.use("/candidates", candidateRoutes);
+app.use("/votes", voteRoutes);
 
 app.listen(port, () => {
   console.log(`Server is Fire at http://localhost:${port}`);

@@ -56,11 +56,13 @@ export const createCandidate = async (
     partyName,
     manifesto,
     electionId,
+    idOnBc,
   }: {
     userId: string;
     partyName?: string;
     manifesto?: string;
     electionId?: string;
+    idOnBc: number;
   } = req.body;
 
   try {
@@ -70,6 +72,7 @@ export const createCandidate = async (
         partyName,
         manifesto,
         electionId,
+        idOnBc,
       },
     });
     res.status(201).json(newCandidate);

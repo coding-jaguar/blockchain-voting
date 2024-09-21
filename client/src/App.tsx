@@ -6,8 +6,14 @@ import AdminDashboard from "./pages/AdminDashboard";
 import VoterProfile from "./pages/VoterProfile";
 import CandidatesPage from "./pages/CandidatesPage";
 import ProtectedRoute from "./pages/ProtectedRoute";
+import { useContext, useEffect } from "react";
+import { EthereumContext } from "./blockchain/EthereumContext";
 
 function App() {
+  const { connectWallet } = useContext(EthereumContext);
+  useEffect(() => {
+    connectWallet();
+  }, []);
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />

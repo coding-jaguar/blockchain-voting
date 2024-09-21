@@ -41,7 +41,7 @@ export const loginUser = async (req: Request, res: Response) => {
         userType: user.userType,
       },
       process.env.JWT_SECRET as string,
-      { expiresIn: "1h" }
+      { expiresIn: "2d" }
     );
 
     const { password: _, ...userWithoutPassword } = user;
@@ -109,11 +109,14 @@ export const createUser = async (req: AuthenticatedRequest, res: Response) => {
       const election = await prisma.election.findFirst({
         where: { isActive: true },
       });
+
+      const candidateCount = await prisma.candidate.count();
       const newCandidate = await prisma.candidate.create({
         data: {
           user: {
             connect: { id: newUser.id },
           },
+          idOnBc: candidateCount,
           election: election ? { connect: { id: election.id } } : undefined,
         },
       });

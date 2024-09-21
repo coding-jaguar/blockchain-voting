@@ -5,6 +5,7 @@ import "./index.css";
 // import { AuthProvider } from "./context/AuthContext.tsx";
 import { BrowserRouter as Router } from "react-router-dom";
 import axios from "axios";
+import { EthereumProvider } from "./blockchain/EthereumContext.tsx";
 
 axios.interceptors.request.use(
   (config) => {
@@ -22,9 +23,9 @@ axios.interceptors.request.use(
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <Router>
-      {/* <AuthProvider> */}
-      <App />
-      {/* </AuthProvider> */}
+      <EthereumProvider>
+        <App />
+      </EthereumProvider>
     </Router>
   </StrictMode>
 );

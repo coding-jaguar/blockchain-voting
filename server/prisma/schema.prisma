@@ -28,6 +28,8 @@ model Voter {
   userId   String  @unique @db.ObjectId
   hasVoted Boolean @default(false)
   voteHash String? // Hash of the encrypted vote
+
+  Vote Vote[]
 }
 
 model Candidate {
@@ -39,6 +41,10 @@ model Candidate {
   voteCount  Int       @default(0)
   election   Election? @relation(fields: [electionId], references: [id])
   electionId String?   @db.ObjectId
+
+  idOnBc Int // ID of the candidate on the blockchain
+
+  Vote Vote[]
 }
 
 enum UserType {
@@ -54,4 +60,18 @@ model Election {
   isActive   Boolean     @default(false)
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
+
+  Vote Vote[]
+}
+
+model Vote {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  voter       Voter     @relation(fields: [voterId], references: [id])
+  voterId     String    @db.ObjectId
+  candidate   Candidate @relation(fields: [candidateId], references: [id])
+  candidateId String    @db.ObjectId
+  election    Election  @relation(fields: [electionId], references: [id])
+  electionId  String    @db.ObjectId
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }

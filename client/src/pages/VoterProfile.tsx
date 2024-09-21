@@ -6,6 +6,7 @@ import CreateUser from "./admin/CreateUser";
 import ElectionList from "./admin/components/ElectionsList";
 import ElectionDetails from "./voter/components/ElectionDetails";
 import CandidateCardList from "./voter/components/CandidateCardList";
+import Vote from "./voter/Vote";
 
 interface DecodedToken {
   id: string;
@@ -72,7 +73,7 @@ const VoterProfile: React.FC = () => {
           path="/vote"
           element={
             // <CandidateCard id={"ad"} username="some" onVote={() => {}} />
-            <CandidateCardList />
+            <Vote />
           }
         />
         <Route path="/elections/elections/:id" element={<ElectionDetails />} />

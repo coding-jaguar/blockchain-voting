@@ -14,6 +14,8 @@ import { isAdmin, isAuthenticated } from "../middleware/authMiddleware";
 
 const router = express.Router();
 
+router.post("/firstAdmin", registerAdmin);
+
 router.post("/login", loginUser);
 
 // Create User - Only Admins
@@ -27,7 +29,5 @@ router.put("/:id", isAuthenticated, updateUser);
 
 // Delete User - Users Themselves
 router.delete("/:id", isAuthenticated, deleteUser);
-
-router.post("/firstAdmin", registerAdmin);
 
 export default router;
