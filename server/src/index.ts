@@ -5,6 +5,7 @@ import cors from "cors";
 import electionRoutes from "./routes/electionRoutes";
 import candidateRoutes from "./routes/candidateRoutes";
 import voteRoutes from "./routes/voteRoutes";
+import { isAdmin, isAuthenticated } from "./middleware/authMiddleware";
 //For env File
 dotenv.config();
 
@@ -19,7 +20,7 @@ app.use(
 );
 // Mount the user routes
 app.use("/users", userRoutes);
-app.use("/elections", electionRoutes);
+app.use("/elections", isAuthenticated, electionRoutes);
 app.use("/candidates", candidateRoutes);
 app.use("/votes", voteRoutes);
 

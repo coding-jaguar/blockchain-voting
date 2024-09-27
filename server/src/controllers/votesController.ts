@@ -1,6 +1,18 @@
 import { Request, Response } from "express";
 import { prisma } from "../db/prisma"; // Assuming prisma is properly set up
 import { jwtDecode } from "jwt-decode";
+import {
+  getAddressFromPublicKey,
+  getTotalVotes,
+  validateVote,
+  vote,
+} from "../ehtersSetup/ether-utils";
+import dotenv from "dotenv";
+
+dotenv.config();
+
+const backendKey = process.env.BACKEND_KEY || "secret";
+
 // Create a new vote
 export const createVote = async (req: Request, res: Response) => {
   const { candidateId, electionId } = req.body;
@@ -19,6 +31,7 @@ export const createVote = async (req: Request, res: Response) => {
 
     const voter = await prisma.voter.findUnique({
       where: { userId: decodedToken.id },
+      include: { user: true },
     });
 
     if (!voter) {
@@ -47,9 +60,28 @@ export const createVote = async (req: Request, res: Response) => {
       },
     });
 
+    const voterAddress = voter.user.publicKey;
+    // await validateVote(voterAddress, backendKey);
+    // const totalVotes = await getTotalVotes();
+    // console.log(totalVotes);
+
     res.status(201).json(newVote);
   } catch (error) {
     res.status(500).json({ message: "Failed to create vote", error });
+  }
+};
+
+export const validateVoteControl = async (req: Request, res: Response) => {
+  const { voterAddress } = req.body;
+  try {
+    const tx = await validateVote(voterAddress, backendKey);
+    console.log("Vote validated");
+    const totalVotes = await getTotalVotes();
+    console.log(totalVotes);
+    res.status(200).json({ message: "Vote validated" });
+  } catch (error: any) {
+    console.error("Error validating vote:", error.message);
+    res.status(500).json({ message: "Failed to validate vote", error });
   }
 };
 

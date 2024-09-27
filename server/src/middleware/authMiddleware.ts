@@ -39,6 +39,7 @@ export const isAdmin = (
   res: Response,
   next: NextFunction
 ) => {
+  console.log(req.body);
   if (req.user?.userType === "ADMIN") {
     next();
   } else {

@@ -1,5 +1,7 @@
+import { EthereumContext } from "@/blockchain/EthereumContext";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { BigNumber } from "ethers";
+import { useContext, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 
 interface User {
@@ -26,9 +28,17 @@ interface Election {
   candidates: Candidate[];
 }
 
+interface CandidateResponse {
+  candidateAddress: string;
+  candidateUsername: string;
+  voteCount: BigNumber;
+}
+
 const ElectionDetails = () => {
   const location = useLocation();
   const [election, setElection] = useState<Election | null>(null);
+  const [candidates, setCandidates] = useState([] as CandidateResponse[]); // Added useState hook
+  const { contract } = useContext(EthereumContext);
 
   const handleAddCandidate = async () => {
     try {
@@ -42,6 +52,27 @@ const ElectionDetails = () => {
   };
 
   useEffect(() => {
+    const getCandidates = async () => {
+      try {
+        if (!contract) {
+          return;
+        }
+        const response = await contract.getAllCandidates();
+        console.log("candidates");
+        const [candidateAddresses, candidateUsernames, voteCounts] = response;
+        const candidateList: CandidateResponse[] = [];
+        for (let i = 0; i < candidateAddresses.length; i++) {
+          candidateList.push({
+            candidateAddress: candidateAddresses[i],
+            candidateUsername: candidateUsernames[i],
+            voteCount: voteCounts[i],
+          });
+        }
+        setCandidates(candidateList);
+      } catch (error) {
+        console.error("Error getting candidates:", error);
+      }
+    };
     const getElection = async () => {
       const locationArray = location.pathname.split("/");
       try {
@@ -55,9 +86,20 @@ const ElectionDetails = () => {
         console.error("Error getting election:", error);
       }
     };
-
+    getCandidates();
     getElection();
   }, [location.pathname]); // Added dependency array
+
+  const handle = (endpoint: string) => {
+    try {
+      const response: any = axios.post(
+        import.meta.env.VITE_BASE_URL + `elections/${endpoint}`
+      );
+      console.log(response.data);
+    } catch (error) {
+      console.error("Error starting election:", error);
+    }
+  };
 
   if (!election) {
     return <p>Loading...</p>;
@@ -86,37 +128,27 @@ const ElectionDetails = () => {
       </p>
 
       <h2>Candidates</h2>
-      <div>
-        {election.candidates.length > 0 ? (
-          election.candidates.map((candidate) => (
-            <div
-              key={candidate.id}
-              style={{ marginBottom: "20px" }}
-              className=" border-white border-4"
-            >
-              <p>
-                <strong>Candidate ID:</strong> {candidate.user.id}
-              </p>
-              <p>
-                <strong>User ID:</strong> {candidate.userId}
-              </p>
-              <p>
-                <strong>username</strong> {candidate.user.username}
-              </p>
-
-              <p>
-                <strong>Vote Count:</strong> {candidate.voteCount}
-              </p>
+      <div className="space-y-4 text-black py-10">
+        {candidates.map((candidate: CandidateResponse) => (
+          <div
+            key={candidate.candidateAddress}
+            className="flex items-center justify-between p-4 bg-gray-100 rounded-md shadow-sm"
+          >
+            <div className="font-semibold text-lg">
+              {candidate.candidateUsername}
             </div>
-          ))
-        ) : (
-          <p>No candidates available.</p>
-        )}
+            <div className="text-sm text-gray-600">
+              Votes: {candidate.voteCount.toString()}
+            </div>
+          </div>
+        ))}
       </div>
+
       <div>
         <button onClick={handleAddCandidate}>Add candidate</button>
-        <button>start election</button>
-        <button>end election</button>
+        <button onClick={() => handle("start")}>start election</button>
+        <button onClick={() => handle("reset")}>reset election</button>
+        <button onClick={() => handle("end")}>end election</button>
       </div>
     </div>
   );

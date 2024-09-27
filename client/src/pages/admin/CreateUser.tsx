@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 // Define the user type
 type UserType = "ADMIN" | "VOTER" | "CANDIDATE";
@@ -19,7 +19,7 @@ interface CreateUserProps {
   publicKey: string | undefined;
   userType: UserType | undefined;
   phoneNumber: string | undefined;
-  update: boolean | false;
+  update: boolean;
   id: string | undefined;
 }
 
@@ -40,6 +40,17 @@ const CreateUser: React.FC<CreateUserProps> = ({
     phoneNumber: phoneNumber || "",
   });
 
+  // Use useEffect to update the state when props change
+  useEffect(() => {
+    setUser({
+      username: username || "",
+      password: password || "",
+      publicKey: publicKey || "",
+      userType: userType || "VOTER",
+      phoneNumber: phoneNumber || "",
+    });
+  }, [username, password, publicKey, userType, phoneNumber]);
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -52,16 +63,13 @@ const CreateUser: React.FC<CreateUserProps> = ({
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Here you would typically send the user data to your backend
     let response: any;
     if (!update) {
       response = await axios.post(
         import.meta.env.VITE_BASE_URL + `users/create`,
         user
       );
-    }
-
-    if (update) {
+    } else {
       response = await axios.put(
         import.meta.env.VITE_BASE_URL + `users/${id}`,
         user
@@ -125,7 +133,7 @@ const CreateUser: React.FC<CreateUserProps> = ({
             htmlFor="publicKey"
             className="block text-sm font-medium text-gray-700"
           >
-            Public Key
+            Address
           </label>
           <input
             type="text"

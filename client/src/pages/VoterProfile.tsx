@@ -4,9 +4,8 @@ import { jwtDecode } from "jwt-decode";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import CreateUser from "./admin/CreateUser";
 import ElectionList from "./admin/components/ElectionsList";
-import ElectionDetails from "./voter/components/ElectionDetails";
-import CandidateCardList from "./voter/components/CandidateCardList";
 import Vote from "./voter/Vote";
+import ElectionDetails from "./admin/components/ElectionDetails";
 
 interface DecodedToken {
   id: string;
@@ -73,7 +72,7 @@ const VoterProfile: React.FC = () => {
           path="/vote"
           element={
             // <CandidateCard id={"ad"} username="some" onVote={() => {}} />
-            <Vote />
+            <Vote voterData={voterData} />
           }
         />
         <Route path="/elections/elections/:id" element={<ElectionDetails />} />

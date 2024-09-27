@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { jwtDecode } from "jwt-decode"; // To decode the JWT token
+import { jwtDecode } from "jwt-decode";
 
 interface Candidate {
   id: string;
@@ -9,6 +9,7 @@ interface Candidate {
   manifesto: string;
   voteCount: number;
   electionId: string;
+  address: string; // Added address field
 }
 
 interface TokenPayload {
@@ -26,25 +27,22 @@ const CandidateForm: React.FC = () => {
     manifesto: "",
     voteCount: 0,
     electionId: "",
+    address: "", // Added address field
   });
 
-  // Fetch candidate details on component mount
   useEffect(() => {
     const fetchCandidate = async () => {
       try {
-        // Retrieve token from localStorage
         const token = localStorage.getItem("token");
         if (!token) {
           throw new Error("Token not found");
         }
 
-        // Decode the token to extract the payload
         const decodedToken: TokenPayload = jwtDecode(token);
         console.log(decodedToken);
 
-        const userId = decodedToken.id; // Extract candidate ID from the payload
+        const userId = decodedToken.id;
 
-        // Fetch candidate details using the candidate ID from the token
         const response = await axios.get(
           `${import.meta.env.VITE_BASE_URL}users/${userId}`
         );
@@ -61,6 +59,7 @@ const CandidateForm: React.FC = () => {
           manifesto: response.data.candidateInfo.manifesto || "",
           voteCount: response.data.candidateInfo.voteCount || 0,
           electionId: response.data.candidateInfo.electionId || "",
+          address: response.data.candidateInfo.address || "", // Added address field
         });
       } catch (error) {
         console.error("Error fetching candidate details:", error);
@@ -88,19 +87,18 @@ const CandidateForm: React.FC = () => {
         throw new Error("Token not found");
       }
 
-      // Update candidate details using the extracted candidate ID
       const response = await axios.put(
         `${import.meta.env.VITE_BASE_URL}candidates/${candidateId}`,
         formData,
         {
           headers: {
-            Authorization: `Bearer ${token}`, // Pass the token in the Authorization header
+            Authorization: `Bearer ${token}`,
           },
         }
       );
 
       alert("Candidate updated successfully");
-      setCandidate(response.data); // Optionally update the candidate in the state
+      setCandidate(response.data);
     } catch (error) {
       console.error("Error updating candidate:", error);
       alert("Failed to update candidate");
@@ -112,48 +110,80 @@ const CandidateForm: React.FC = () => {
   }
 
   return (
-    <div className="text-white text-center">
-      <h1 className="mb-10">{candidate.username}</h1>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="partyName">Party Name:</label>
+    <div className="text-white text-center p-6">
+      <h1 className="mb-10 text-2xl font-bold">{candidate.username}</h1>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="flex flex-col items-start">
+          <label htmlFor="partyName" className="mb-2">
+            Party Name:
+          </label>
           <input
             type="text"
             id="partyName"
             name="partyName"
             value={formData.partyName}
             onChange={handleChange}
+            className="w-full p-2 text-black"
           />
         </div>
-        <div>
-          <label htmlFor="manifesto">Manifesto:</label>
+        <div className="flex flex-col items-start">
+          <label htmlFor="manifesto" className="mb-2">
+            Manifesto:
+          </label>
           <textarea
             id="manifesto"
             name="manifesto"
             value={formData.manifesto}
             onChange={handleChange}
+            className="w-full p-2 text-black"
+            rows={4}
           />
         </div>
-        <div>
-          <label htmlFor="voteCount">Vote Count:</label>
+        <div className="flex flex-col items-start">
+          <label htmlFor="voteCount" className="mb-2">
+            Vote Count:
+          </label>
           <input
             type="number"
             id="voteCount"
             name="voteCount"
             value={formData.voteCount}
+            className="w-full p-2 text-black"
+            readOnly
           />
         </div>
-        <div>
-          <label htmlFor="electionId">Election ID:</label>
+        <div className="flex flex-col items-start">
+          <label htmlFor="electionId" className="mb-2">
+            Election ID:
+          </label>
           <input
             type="text"
             id="electionId"
             name="electionId"
             value={formData.electionId}
             onChange={handleChange}
+            className="w-full p-2 text-black"
           />
         </div>
-        <button type="submit">Update Candidate</button>
+        <div className="flex flex-col items-start">
+          <label htmlFor="address" className="mb-2">
+            Candidate Address:
+          </label>
+          <input
+            type="text"
+            id="address"
+            name="address"
+            value={formData.address}
+            onChange={handleChange}
+            className="w-full p-2 text-black"
+          />
+        </div>
+        <button
+          type="submit"
+          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+        >
+          Update Candidate
+        </button>
       </form>
     </div>
   );

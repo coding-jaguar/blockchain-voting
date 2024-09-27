@@ -4,6 +4,13 @@ import { Request, Response } from "express";
 import { prisma } from "../db/prisma";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+// import { contract, provider } from "../ehtersSetup/ethersSetup";
+import {
+  addCandidate,
+  addVoter,
+  getVoterInfo,
+  publicKeyToAddress,
+} from "../ehtersSetup/ether-utils";
 
 type UserType = "ADMIN" | "VOTER" | "CANDIDATE";
 
@@ -120,6 +127,9 @@ export const createUser = async (req: AuthenticatedRequest, res: Response) => {
           election: election ? { connect: { id: election.id } } : undefined,
         },
       });
+
+      // contract.createCandidate(newCandidate.idOnBc, publicKey);
+
       // Add the new candidate to the election's candidates list
       if (election) {
         await prisma.election.update({
@@ -130,6 +140,10 @@ export const createUser = async (req: AuthenticatedRequest, res: Response) => {
             },
           },
         });
+      }
+      if (publicKey) {
+        const address = publicKey;
+        addCandidate(address, username);
       }
     }
 
@@ -142,6 +156,10 @@ export const createUser = async (req: AuthenticatedRequest, res: Response) => {
           hasVoted: false,
         },
       });
+      if (publicKey) {
+        const address = publicKey;
+        addVoter(address);
+      }
     }
 
     res.status(201).json(newUser);
@@ -187,7 +205,12 @@ export const updateUser = async (req: AuthenticatedRequest, res: Response) => {
       where: { id },
       data: { username, publicKey, userType, phoneNumber },
     });
+
     res.json(updatedUser);
+    if (publicKey) {
+      addVoter(publicKey);
+      console.log(await getVoterInfo(publicKey));
+    }
   } catch (err: any) {
     res.status(400).json({ message: err.message });
   }
