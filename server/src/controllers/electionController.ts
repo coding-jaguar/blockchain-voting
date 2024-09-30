@@ -1,6 +1,10 @@
 import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
-import { resetElection, startElection as se } from "../ehtersSetup/ether-utils";
+import {
+  endElection,
+  resetElection,
+  startElection as se,
+} from "../ehtersSetup/ether-utils";
 const prisma = new PrismaClient();
 
 // Create a new election
@@ -110,18 +114,22 @@ export const startElection = async (req: Request, res: Response) => {
   }
 };
 
-export const endElection = async (req: Request, res: Response) => {
+export const endElections = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const { id } = req.body;
 
     const election = await prisma.election.update({
       where: { id },
       data: { isActive: false },
     });
 
+    endElection();
+
     return res.status(200).json(election);
-  } catch (error) {
-    return res.status(500).json({ error: "Failed to end election" });
+  } catch (error: any) {
+    return res
+      .status(500)
+      .json({ error: "Failed to end election" + error.message });
   }
 };
 
@@ -144,8 +152,10 @@ export const reset = async (req: Request, res: Response) => {
   try {
     await prisma.vote.deleteMany();
     resetElection();
-
-    return res.status(200).json({ message: "Election reset successfully" });
+    const voteCount = await prisma.vote.count();
+    return res
+      .status(200)
+      .json({ message: "Election reset successfully", voteCount });
   } catch (error) {
     return res.status(500).json({ error: "Failed to reset election" });
   }

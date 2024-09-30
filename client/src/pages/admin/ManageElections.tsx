@@ -15,6 +15,7 @@ const ManageElections = () => {
           import.meta.env.VITE_BASE_URL + "elections"
         );
         setElections(response.data);
+        console.log("electionData", response.data);
       } catch (error) {
         console.error("Error getting elections:", error);
       }

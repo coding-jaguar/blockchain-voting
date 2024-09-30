@@ -9,12 +9,14 @@ import {
   deleteUser,
   registerAdmin,
   loginUser,
+  getAllUsers,
 } from "../controllers/userController";
 import { isAdmin, isAuthenticated } from "../middleware/authMiddleware";
 
 const router = express.Router();
 
-router.post("/firstAdmin", registerAdmin);
+router.get("/", isAuthenticated, isAdmin, getAllUsers);
+router.post("/firstAdmin", registerAdmin); //{"username":"root", "password":"root"}
 
 router.post("/login", loginUser);
 

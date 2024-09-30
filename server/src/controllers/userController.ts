@@ -232,3 +232,14 @@ export const deleteUser = async (req: AuthenticatedRequest, res: Response) => {
     res.status(404).json({ message: "User not found." });
   }
 };
+
+export const getAllUsers = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const users = await prisma.user.findMany({
+      include: { voterInfo: true, candidateInfo: true },
+    });
+    res.json(users);
+  } catch (err: any) {
+    res.status(500).json({ message: err.message });
+  }
+};

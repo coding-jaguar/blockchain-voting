@@ -2,6 +2,7 @@ import { ethers } from "ethers";
 import abi from "./Voting.json"; // ABI for the Voting contract
 import dotenv from "dotenv";
 dotenv.config();
+import { prisma } from "../db/prisma";
 
 // Configure contract address and provider
 const contractAddress = process.env.contractAddress as string;
@@ -68,6 +69,7 @@ export const endElection = async () => {
   try {
     const tx = await votingContract.endElection();
     await tx.wait();
+
     console.log("Election ended");
   } catch (error: any) {
     console.error("Error ending election:", error.message);

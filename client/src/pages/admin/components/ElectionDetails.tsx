@@ -93,7 +93,10 @@ const ElectionDetails = () => {
   const handle = (endpoint: string) => {
     try {
       const response: any = axios.post(
-        import.meta.env.VITE_BASE_URL + `elections/${endpoint}`
+        import.meta.env.VITE_BASE_URL + `elections/${endpoint}`,
+        {
+          electionId: election?.id,
+        }
       );
       console.log(response.data);
     } catch (error) {

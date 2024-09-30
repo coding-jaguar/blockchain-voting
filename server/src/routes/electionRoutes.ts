@@ -6,6 +6,7 @@ import {
   updateElection,
   deleteElection,
   reset,
+  endElections,
 } from "../controllers/electionController";
 import {
   endElection,
@@ -19,10 +20,10 @@ const router = express.Router();
 router.post("/", isAdmin, createElection);
 router.get("/", getAllElections);
 router.post("/start", isAdmin, startElection);
-router.post("/end", isAdmin, endElection);
-router.post("/reset", reset);
+router.post("/end", isAdmin, endElections);
+router.post("/reset", isAdmin, reset);
 router.get("/:id", getElectionById);
-router.put("/:id", updateElection);
-router.delete("/:id", deleteElection);
+router.put("/:id", isAdmin, updateElection);
+router.delete("/:id", isAdmin, deleteElection);
 
 export default router;
