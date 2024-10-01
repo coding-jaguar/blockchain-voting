@@ -8,8 +8,18 @@ const AdminDashboard: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="admin-dashboard">
-      <h1>Admin Dashboard</h1>
+    <div
+      className=""
+      style={{
+        width: "1500px",
+        backgroundImage:
+          "url('https://rejolut.com/wp-content/uploads/2022/02/voting7.png')",
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
+      }}
+    >
+      <div>
+        <h1 style={{ float: "left" }}>Admin Dashboard</h1>
+      </div>
       <button
         onClick={() => {
           navigate("manage-elections");
